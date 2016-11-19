@@ -9,7 +9,7 @@ import
   lib/logger
 
 newStyledConsoleLogger().addHandler()
-setLogFilter(lvlNotice)
+setLogFilter(lvlInfo)
 
 import
   lib/config,
@@ -66,20 +66,26 @@ case args[0]:
   of "init":
     if prj.configured:
       fatal "Project already configured."
-      quit(1)
+      quit(2)
     prj.init(storage)
     notice "Project initialized using '$1' as storage directory." % storage
   of "map":
     if args.len < 2:
       fatal "No alias specified."
-      quit(2)
+      quit(3)
     prj.map(args[1], %opts) 
   of "unmap":
     if args.len < 2:
       fatal "No alias specified."
-      quit(2)
+      quit(3)
     prj.unmap(args[1]) 
   else:
-    #TODO
-    echo usage
-    discard
+    if args.len < 1:
+      echo usage
+      quit(1)
+    if args.len < 2:
+      prj.load
+      for key, val in prj.packages.pairs:
+        prj.execute(args[0], key) 
+    else:
+      prj.execute(args[0], args[1]) 

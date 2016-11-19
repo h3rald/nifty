@@ -35,8 +35,8 @@ method log*(logger: StyledConsoleLogger; level: Level; args: varargs[string, `$`
     f.setForegroundColor(prefix.color)
     f.write(prefix.msg)
     f.write(ln)
-    f.write("\n")
     resetAttributes()
+    f.write("\n")
     if level in {lvlError, lvlFatal}: flushFile(f)
 
 proc newStyledConsoleLogger*(levelThreshold = lvlAll; fmtStr = " "): StyledConsoleLogger =
