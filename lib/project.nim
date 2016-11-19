@@ -16,7 +16,7 @@ type
 let placeholder = peg"'{{' {[^}]+} '}}'"
 
 proc newNiftyProject*(dir: string): NiftyProject =
-  result.dir = dir.expandFileName
+  result.dir = dir
 
 proc configFile*(prj: NiftyProject): string = 
   return prj.dir/"nifty.json"
@@ -47,7 +47,8 @@ proc load*(prj: var NiftyProject) =
     fatal "Project not initialized - configuration file not found."
     quit(10)
   let cfg = prj.configFile.parseFile
-  prj.storage = cfg["storage"].getStr.expandFileName
+  prj.storage = cfg["storage"].getStr
+  prj.storage.createDir()
   prj.commands = cfg["commands"]
   prj.packages = cfg["packages"]
 
@@ -117,8 +118,8 @@ proc execute*(prj: var NiftyProject, command, alias: string) =
     if res.hasKey("pwd"):
       pwd = res["pwd"].getStr.replace(placeholder) do (m: int, n: int, c: openArray[string]) -> string:
         return package[c[0]].getStr
+      pwd = prj.storage/pwd
     notice "Executing: $1" % cmd
-    pwd = (prj.storage/pwd).expandFileName()
     pwd.createDir()
     pwd.setCurrentDir()
     discard execShellCmd cmd

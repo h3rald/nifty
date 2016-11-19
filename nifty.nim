@@ -3,7 +3,8 @@ import
   os,
   parseopt2,
   logging,
-  strutils
+  strutils,
+  sequtils
 
 import
   lib/logger
@@ -21,6 +22,18 @@ type
     val: JsonNode
 
 let usage* = """  $1 v$2 - $3
+  Commands:
+    init [--storage:<dir>]                Initializes a project in the current directory.
+    map <package> [--<property>:<value>]  Defines <package> with the specified properties.
+    unmap <package>                       Unmaps a previously-mapped package <package>.
+    remove <package>                      Removes <storage-dir>/<package> directory
+                                          and all its contents.
+    <command> [<package>]                 Executes <command> (on <package>).
+  Options:
+    --log, -l               Specifies the log level (default: info).
+    --help, -h              Displays this message.
+    --version, -h           Displays the version of the application.
+    --storage, -s           Specifies what directory to use for storing packages.
 """ % [appname, version, appdesc]
 
 var command: string
@@ -33,6 +46,15 @@ proc `%`(opts: seq[NiftyOption]): JsonNode =
   result = newJObject()
   for o in opts:
     result[o.key] = o.val
+
+proc confirmAndRemoveDir(dir: string) =
+  if not dirExists(dir):
+    warn "Directory '$1' does not exist - nothing to do." % dir
+    return
+  warn "Delete directory '$1' and all its contents? [y/n]" % dir
+  let answer = stdin.readLine.toLowerAscii[0]
+  if answer == 'y':
+    dir.removeDir()
 
 for kind, key, val in getopt():
   case kind:
@@ -62,6 +84,10 @@ for kind, key, val in getopt():
       discard
 
 var prj = newNiftyProject(getCurrentDir())
+
+if args.len == 0:
+  echo usage
+  quit(0)
 case args[0]:
   of "init":
     if prj.configured:
@@ -79,13 +105,28 @@ case args[0]:
       fatal "No alias specified."
       quit(3)
     prj.unmap(args[1]) 
+  of "remove":
+    if args.len < 2:
+      prj.load
+      var packages = toSeq(prj.packages.pairs)
+      if packages.len == 0:
+        warn "No packages defined - nothing to do."
+      else:
+        for key, val in prj.packages.pairs:
+          confirmAndRemoveDir(prj.storage/key)
+    else:
+      confirmAndRemoveDir(prj.storage/args[1])
   else:
     if args.len < 1:
       echo usage
       quit(1)
     if args.len < 2:
       prj.load
-      for key, val in prj.packages.pairs:
-        prj.execute(args[0], key) 
+      var packages = toSeq(prj.packages.pairs)
+      if packages.len == 0:
+        warn "No packages defined - nothing to do."
+      else:
+        for key, val in prj.packages.pairs:
+          prj.execute(args[0], key) 
     else:
       prj.execute(args[0], args[1]) 
