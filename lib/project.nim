@@ -60,3 +60,12 @@ proc map*(prj: var NiftyProject, alias: string, props: JsonNode) =
     notice "  $1 = $2" % [key, $val]
   prj.save
   notice "Package definition '$1' saved." % alias
+
+proc unmap*(prj: var NiftyProject, alias: string) =
+  prj.load
+  if not prj.packages.hasKey alias:
+    warn "Package definition '$1' not found. Nothing to do." % alias
+    return
+  prj.packages.delete(alias)
+  prj.save
+  notice "Package definition '$1' removed." % alias

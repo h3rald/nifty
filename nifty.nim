@@ -74,6 +74,11 @@ case args[0]:
       fatal "No alias specified."
       quit(2)
     prj.map(args[1], %opts) 
+  of "unmap":
+    if args.len < 2:
+      fatal "No alias specified."
+      quit(2)
+    prj.unmap(args[1]) 
   else:
     #TODO
     echo usage
