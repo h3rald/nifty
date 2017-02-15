@@ -7,7 +7,7 @@ import
   sequtils
 
 import
-  lib/logger
+  lib/styled_console_logger
 
 newStyledConsoleLogger().addHandler()
 setLogFilter(lvlInfo)
@@ -36,7 +36,6 @@ let usage* = """  $1 v$2 - $3
     --storage, -s           Specifies what directory to use for storing packages.
 """ % [appname, version, appdesc]
 
-var command: string
 var storage = "packages"
 
 var args = newSeq[string](0)
@@ -127,6 +126,6 @@ case args[0]:
         warn "No packages defined - nothing to do."
       else:
         for key, val in prj.packages.pairs:
-          prj.execute(args[0], key) 
+          prj.executeRec(args[0], key) 
     else:
-      prj.execute(args[0], args[1]) 
+      prj.executeRec(args[0], args[1]) 

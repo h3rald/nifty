@@ -6,7 +6,7 @@ import
   logging
 
 import
-  logger
+  styled_console_logger
 
 const
   cfgfile   = "../nifty.nimble".slurp

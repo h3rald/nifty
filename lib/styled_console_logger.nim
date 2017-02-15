@@ -13,7 +13,7 @@ proc logPrefix*(level: Level): tuple[msg: string, color: ForegroundColor] =
     of lvlDebug:
       return ("---", fgMagenta)
     of lvlInfo:
-      return ("(i) ", fgCyan)
+      return ("(i)", fgCyan)
     of lvlNotice:
       return ("---", fgGreen)
     of lvlWarn:
@@ -23,7 +23,7 @@ proc logPrefix*(level: Level): tuple[msg: string, color: ForegroundColor] =
     of lvlFatal:
       return ("(x)", fgRed)
     else:
-      return ("", fgWhite)
+      return ("   ", fgWhite)
 
 method log*(logger: StyledConsoleLogger; level: Level; args: varargs[string, `$`]) =
   var f = stdout

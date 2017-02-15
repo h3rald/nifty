@@ -99,10 +99,10 @@ proc lookupCommand(prj: NiftyProject, command: string, props: seq[string], cmd: 
       cmd = val
   return score > 0
   
-proc execute*(prj: var NiftyProject, command, alias: string) =
+proc execute*(prj: var NiftyProject, command, alias: string): int =
   prj.load
   if not prj.packages.hasKey alias:
-    warn "Package definition '$1' not found. Nothing to do." % alias
+    warn "Package definition '$1' not found within $2. Nothing to do." % [alias, prj.dir]
     return
   notice "$1: $2" % [command, alias]
   let package = prj.packages[alias]
@@ -122,8 +122,17 @@ proc execute*(prj: var NiftyProject, command, alias: string) =
     notice "Executing: $1" % cmd
     pwd.createDir()
     pwd.setCurrentDir()
-    discard execShellCmd cmd
+    result = execShellCmd cmd
   else:
     warn "Command '$1' not available for package '$2'" % [command, alias]
   setCurrentDir(prj.dir)
 
+proc executeRec*(prj: var NiftyProject, command, alias: string) =
+  if (execute(prj, command, alias) != 0):
+    return
+  var pwd = getCurrentDir();
+  var childProj = newNiftyProject(pwd/prj.storage/alias)
+  if childProj.configured:
+    childProj.load()
+    for key, val in childProj.packages.pairs:
+      childProj.executeRec(command, key)
