@@ -30,6 +30,9 @@ proc init*(prj: var NiftyProject, storage: string) =
   var o = newJObject()
   o["storage"] = %prj.storage
   o["commands"] = newJObject()
+  o["commands"]["get"] = newJObject()
+  o["commands"]["get"]["curl+src+name"] = newJObject()
+  o["commands"]["get"]["curl+src+name"]["cmd"] = %"curl {{src}} -o {{name}}"
   o["commands"]["install"] = newJObject()
   o["commands"]["install"]["git+src"] = newJObject()
   o["commands"]["install"]["git+src"]["cmd"] = %"git clone {{src}} --depth 1"
@@ -128,11 +131,15 @@ proc execute*(prj: var NiftyProject, command, alias: string): int =
   setCurrentDir(prj.dir)
 
 proc executeRec*(prj: var NiftyProject, command, alias: string) =
+  let pwd = getCurrentDir();
   if (execute(prj, command, alias) != 0):
     return
-  var pwd = getCurrentDir();
   var childProj = newNiftyProject(pwd/prj.storage/alias)
   if childProj.configured:
     childProj.load()
+    setCurrentDir(childProj.dir)
+    info "--> REC: ", alias
     for key, val in childProj.packages.pairs:
+      info "--> ", key
       childProj.executeRec(command, key)
+    setCurrentDir(pwd)
