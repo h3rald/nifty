@@ -30,18 +30,19 @@ proc init*(prj: var NiftyProject, storage: string) =
   var o = newJObject()
   o["storage"] = %prj.storage
   o["commands"] = newJObject()
-  o["commands"]["get"] = newJObject()
-  o["commands"]["get"]["curl+src+name"] = newJObject()
-  o["commands"]["get"]["curl+src+name"]["cmd"] = %"curl {{src}} -o {{name}}"
   o["commands"]["install"] = newJObject()
   o["commands"]["install"]["git+src"] = newJObject()
   o["commands"]["install"]["git+src"]["cmd"] = %"git clone {{src}} --depth 1"
   o["commands"]["install"]["git+src+tag"] = newJObject()
   o["commands"]["install"]["git+src+tag"]["cmd"] = %"git clone --branch {{tag}} {{src}} --depth 1"
+  o["commands"]["install"]["curl+src+name"] = newJObject()
+  o["commands"]["install"]["curl+src+name"]["cmd"] = %"curl {{src}} -o {{name}}"
   o["commands"]["update"] = newJObject()
   o["commands"]["update"]["git+name"] = newJObject()
   o["commands"]["update"]["git+name"]["cmd"] = %"git pull"
   o["commands"]["update"]["git+name"]["pwd"] = %"{{name}}"
+  o["commands"]["update"]["curl+src+name"] = newJObject()
+  o["commands"]["update"]["curl+src+name"]["cmd"] = %"curl {{src}} -o {{name}}"
   o["packages"] = newJObject()
   prj.configFile.writeFile(o.pretty)
 

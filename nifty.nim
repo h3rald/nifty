@@ -47,13 +47,24 @@ proc `%`(opts: seq[NiftyOption]): JsonNode =
     result[o.key] = o.val
 
 proc confirmAndRemoveDir(dir: string) =
-  if not dirExists(dir):
-    warn "Directory '$1' does not exist - nothing to do." % dir
-    return
   warn "Delete directory '$1' and all its contents? [y/n]" % dir
   let answer = stdin.readLine.toLowerAscii[0]
   if answer == 'y':
     dir.removeDir()
+
+proc confirmAndRemoveFile(file: string) =
+  warn "Delete file '$1'? [y/n]" % file 
+  let answer = stdin.readLine.toLowerAscii[0]
+  if answer == 'y':
+    file.removeFile()
+
+proc confirmAndRemovePackage(pkg: string) =
+  if pkg.fileExists():
+    pkg.confirmAndRemoveFile()
+  elif pkg.dirExists():
+    pkg.confirmAndRemoveDir()
+  else:
+    warn "Package '$1' not found." % pkg
 
 for kind, key, val in getopt():
   case kind:
@@ -112,9 +123,9 @@ case args[0]:
         warn "No packages defined - nothing to do."
       else:
         for key, val in prj.packages.pairs:
-          confirmAndRemoveDir(prj.storage/key)
+          confirmAndRemovePackage(prj.storage/key)
     else:
-      confirmAndRemoveDir(prj.storage/args[1])
+      confirmAndRemovePackage(prj.storage/args[1])
   else:
     if args.len < 1:
       echo usage
