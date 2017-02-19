@@ -116,8 +116,8 @@ case args[0]:
       quit(3)
     prj.unmap(args[1]) 
   of "remove":
+    prj.load
     if args.len < 2:
-      prj.load
       var packages = toSeq(prj.packages.pairs)
       if packages.len == 0:
         warn "No packages defined - nothing to do."
