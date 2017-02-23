@@ -6,7 +6,7 @@ import
 system.addQuitProc(resetAttributes)
 
 type  
-  StyledConsoleLogger* = ref object of Logger
+  NiftyLogger* = ref object of Logger
 
 proc logPrefix*(level: Level): tuple[msg: string, color: ForegroundColor] =
   case level:
@@ -25,7 +25,7 @@ proc logPrefix*(level: Level): tuple[msg: string, color: ForegroundColor] =
     else:
       return ("   ", fgWhite)
 
-method log*(logger: StyledConsoleLogger; level: Level; args: varargs[string, `$`]) =
+method log*(logger: NiftyLogger; level: Level; args: varargs[string, `$`]) =
   var f = stdout
   if level >= getLogFilter() and level >= logger.levelThreshold:
     if level >= lvlWarn: 
@@ -39,7 +39,7 @@ method log*(logger: StyledConsoleLogger; level: Level; args: varargs[string, `$`
     f.write("\n")
     if level in {lvlError, lvlFatal}: flushFile(f)
 
-proc newStyledConsoleLogger*(levelThreshold = lvlAll; fmtStr = " "): StyledConsoleLogger =
+proc newNiftyLogger*(levelThreshold = lvlAll; fmtStr = " "): NiftyLogger =
   new result
   result.fmtStr = fmtStr
   result.levelThreshold = levelThreshold

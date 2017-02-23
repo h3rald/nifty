@@ -7,9 +7,9 @@ import
   sequtils
 
 import
-  lib/styled_console_logger
+  lib/niftylogger
 
-newStyledConsoleLogger().addHandler()
+newNiftyLogger().addHandler()
 setLogFilter(lvlInfo)
 
 import

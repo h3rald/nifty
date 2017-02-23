@@ -6,7 +6,7 @@ import
   logging
 
 import
-  styled_console_logger
+  niftylogger
 
 const
   cfgfile   = "../nifty.nimble".slurp
@@ -19,7 +19,7 @@ var
 
 if f != nil:
   var p: CfgParser
-  open(p, f, "../minim.nimble")
+  open(p, f, "../nifty.nimble")
   while true:
     var e = next(p)
     case e.kind
