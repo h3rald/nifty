@@ -15,7 +15,7 @@ proc logPrefix*(level: Level): tuple[msg: string, color: ForegroundColor] =
     of lvlInfo:
       return ("(i)", fgCyan)
     of lvlNotice:
-      return ("---", fgGreen)
+      return ("   ", fgWhite)
     of lvlWarn:
       return ("(!)", fgYellow)
     of lvlError:
