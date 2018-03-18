@@ -21,8 +21,8 @@
   },
   "map":
   {
-    "_syntax": "map <package> [--<property>_<value>]",
-    "_description": "Defines <package> with the specified properties."
+    "_syntax": "map <package>",
+    "_description": "Configures a new or existing package <package>."
   },
   "remove":
   {
@@ -33,5 +33,10 @@
   {
     "_syntax": "unmap <package>",
     "_description": "Unmaps the previously-mapped package <package>."
+  },
+  "update-commands":
+  {
+    "_syntax": "update-commands",
+    "_description": "Updates the command definitions for the current project."
   }
 }

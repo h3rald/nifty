@@ -28,13 +28,21 @@ proc confirm(q: string): bool =
     return true
   return false
 
-proc addProperty(parentObj: JsonNode): tuple[key: string, value: JsonNode] =
+proc addProperty(parentObj: JsonNode, name = ""): tuple[key: string, value: JsonNode] =
   var done = false
   while (not done):
-    stdout.setForegroundColor(fgBlue)
-    stdout.write("    -> Name: ")
-    resetAttributes()
-    result.key = stdin.readLine
+    if name == "":
+      stdout.setForegroundColor(fgBlue)
+      stdout.write("    -> Name: ")
+      resetAttributes()
+      result.key = stdin.readLine
+    elif name == "name":
+      warn "Property identifier 'name' cannot be modified."
+    else:
+      stdout.setForegroundColor(fgBlue)
+      echo "    -> Name: " & name
+      resetAttributes()
+      result.key = name
     var ok = false
     while (not ok):
       var label = "    -> Value: "
@@ -61,9 +69,6 @@ proc addProperties(obj: var JsonNode) =
     let prop = addProperty(obj)
     obj[prop.key] = prop.value
     done = not confirm("Do you want to add/remove more properties?")
-  for k, v in obj.mpairs:
-    if v == newJNull():
-      obj.delete(k)
 
 proc changeValue(oldv: tuple[label: string, value: JsonNode], newv: tuple[label: string, value: JsonNode]): bool =
   if oldv.value != newJNull():
@@ -197,19 +202,37 @@ case args[0]:
     notice "Project initialized using '$1' as storage directory." % storage
   of "map":
     if args.len < 2:
-      fatal "No package alias specified."
+      fatal "No package specified."
       quit(3)
-    notice "Mapping package alias: " & args[1] 
-    warn "Specify properties for alias '$1':" % [args[1]]
+    let alias = args[1]
     var props = newJObject()
-    addProperties(props)
-    prj.map(args[1], %props) 
+    prj.load
+    if prj.packages.hasKey(alias):
+      notice "Remapping existing package: " & alias
+      warn "Specify properties for package '$1':" % alias
+      props = prj.packages[alias]
+      for k, v in props.mpairs:
+        if k == "name":
+          continue
+        let prop = addProperty(props, k)
+        props[prop.key] = prop.value
+      if confirm "Do you want to add/remove more properties?":
+        addProperties(props)
+    else:
+      notice "Mapping new package: " & alias
+      warn "Specify properties for package '$1':" % alias
+      addProperties(props)
+    prj.map(alias, props) 
   of "unmap":
     if args.len < 2:
-      fatal "No package alias specified."
+      fatal "No package specified."
       quit(3)
-    if confirm("Remove mapping for package alias '$1'?" % args[1]):
-      prj.unmap(args[1]) 
+    let alias = args[1]
+    if not prj.packages.hasKey(alias):
+      fatal "Package '$1' not defined." % [alias]
+      quit(4)
+    if confirm("Remove mapping for package '$1'?" % alias):
+      prj.unmap(alias) 
   of "remove":
     prj.load
     if args.len < 2:
@@ -229,28 +252,30 @@ case args[0]:
     walkPkgs(prj, pwd)
   of "info":
     if args.len < 2:
-      fatal "No package alias specified."
+      fatal "No package specified."
       quit(3)
     prj.load
     let alias = args[1]
     if not prj.packages.hasKey(alias):
-      fatal "Package alias '$1' not defined." % [alias]
+      fatal "Package '$1' not defined." % [alias]
       quit(4)
     let data = prj.packages[alias]
     for k, v in data.pairs:
       echo "$1:\t$2" % [k, $v]
   of "help":
-    prj.load
     if args.len < 2:
       for k, v in prj.help.pairs:
-        echo "nifty $1\n    $2" % [v["_syntax"].getStr, v["_description"].getStr]
+        stdout.setForegroundColor(fgGreen)
+        echo "nifty $1" % v["_syntax"].getStr
+        resetAttributes()
+        echo "    $1" % v["_description"].getStr
     else:
       let cmd = args[1]
       if not prj.help.hasKey(cmd):
         fatal "Command '$1' is not defined." % cmd
         quit(5)
       echo "nifty $1\n    $2" % [prj.help[cmd]["_syntax"].getStr, prj.help[cmd]["_description"].getStr]
-  of "update-definitions":
+  of "update-commands":
     prj.load
     if updateDefinitions(prj):
       prj.save

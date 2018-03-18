@@ -43,16 +43,18 @@ proc load*(prj: var NiftyProject) =
   prj.commands = cfg["commands"]
   prj.packages = cfg["packages"]
 
-proc help*(prj: NiftyProject): JsonNode =
+proc help*(prj: var NiftyProject): JsonNode =
   result = systemHelp.parseJson
-  for k, v in prj.commands.pairs:
-    if v.hasKey("_syntax") and v.hasKey("_description"):
-      result[k] = %*("""
-        {
-          "_syntax": "$1",
-          "_description": "$2"
-        }
-      """ % [v["_syntax"].getStr, v["_description"].getStr])
+  if prj.configured:
+    prj.load
+    for k, v in prj.commands.pairs:
+      if v.hasKey("_syntax") and v.hasKey("_description"):
+        result[k] = ("""
+          {
+            "_syntax": "$1",
+            "_description": "$2"
+          }
+        """ % [v["_syntax"].getStr, v["_description"].getStr]).parseJson
 
 proc save*(prj: NiftyProject) = 
   var o = newJObject()
@@ -61,28 +63,29 @@ proc save*(prj: NiftyProject) =
   o["packages"] = %prj.packages
   prj.configFile.writeFile(o.pretty)
 
-proc map*(prj: var NiftyProject, alias: string, props: JsonNode) =
+proc map*(prj: var NiftyProject, alias: string, props: var JsonNode) =
+  for k, v in props.mpairs:
+    if v == newJNull():
+      props.delete(k)
   prj.load
   if not prj.packages.hasKey alias:
-    notice "Adding package definition '$1'..." % alias
+    notice "Adding package mapping '$1'..." % alias
     prj.packages[alias] = newJObject()
     prj.packages[alias]["name"] = %alias
   else:
-    notice "Updating package definition '$1'..." % alias
+    notice "Updating package mapping '$1'..." % alias
+    prj.packages[alias] = newJObject()
   for key, val in props.pairs:
     prj.packages[alias][key] = val
     notice "  $1: $2" % [key, $val]
   prj.save
-  notice "Package definition '$1' saved." % alias
+  notice "Package mapping '$1' saved." % alias
 
 proc unmap*(prj: var NiftyProject, alias: string) =
   prj.load
-  if not prj.packages.hasKey alias:
-    warn "Package definition '$1' not found. Nothing to do." % alias
-    return
   prj.packages.delete(alias)
   prj.save
-  notice "Package definition '$1' removed." % alias
+  notice "Package mapping '$1' removed." % alias
 
 proc lookupCommand(prj: NiftyProject, command: string, props: seq[string], cmd: var JsonNode): bool =
   if not prj.commands.hasKey command:
@@ -92,6 +95,8 @@ proc lookupCommand(prj: NiftyProject, command: string, props: seq[string], cmd: 
   var score = 0
   # Cycle through command definitions
   for key, val in cmds:
+    if key == "_syntax" or key == "_description":
+      continue
     var params = key.split("+")
     # Check if all params are available
     var match = params.all do (x: string) -> bool:
