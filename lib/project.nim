@@ -30,7 +30,7 @@ proc configured*(prj: NiftyProject): bool =
 proc init*(prj: var NiftyProject, storage: string) =
   prj.storage = storage
   createDir(prj.dir/prj.storage)
-  var o = %*(niftyTpl % [prj.storage])
+  var o = parseJson(niftyTpl % [prj.storage])
   prj.configFile.writeFile(o.pretty)
 
 proc load*(prj: var NiftyProject) =
@@ -71,7 +71,7 @@ proc map*(prj: var NiftyProject, alias: string, props: JsonNode) =
     notice "Updating package definition '$1'..." % alias
   for key, val in props.pairs:
     prj.packages[alias][key] = val
-    notice "  $1 = $2" % [key, $val]
+    notice "  $1: $2" % [key, $val]
   prj.save
   notice "Package definition '$1' saved." % alias
 

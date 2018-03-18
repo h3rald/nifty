@@ -19,11 +19,6 @@ import
   lib/config,
   lib/project
 
-type
-  NiftyOption = object
-    key: string
-    val: JsonNode
-
 when defined(windows):
    proc putchr*(c: cint): cint {.discardable, header: "<conio.h>", importc: "_putch".}
 else:
@@ -38,6 +33,29 @@ proc confirm(q: string): bool =
   if answer.match(peg"^ i'y' / i'yes' $"):
     return true
   return false
+
+proc addProperty(): tuple[key: string, value: JsonNode] =
+  var done = false
+  while (not done):
+    stdout.setForegroundColor(fgBlue)
+    stdout.write("    -> Name: ")
+    resetAttributes()
+    result.key = stdin.readLine
+    stdout.setForegroundColor(fgBlue)
+    stdout.write("    -> Value: ")
+    resetAttributes()
+    try:
+      result.value = %*stdin.readLine
+    except:
+      warn("Invalid value; please enter a valid JSON value.")
+    done = confirm("OK?")
+
+proc addProperties(obj: var JsonNode) =
+  var done = false
+  while (not done):
+    let prop = addProperty()
+    obj[prop.key] = prop.value
+    done = not confirm("Do you want to add more properties?")
 
 proc changeValue(oldv: tuple[label: string, value: JsonNode], newv: tuple[label: string, value: JsonNode]): bool =
   if oldv.value != newJNull():
@@ -68,12 +86,6 @@ let usage* = """  $1 v$2 - $3
 """ % [appname, version, appdesc]
 
 var args = newSeq[string](0)
-var opts = newSeq[NiftyOption](0)
-
-proc `%`(opts: seq[NiftyOption]): JsonNode =
-  result = newJObject()
-  for o in opts:
-    result[o.key] = o.val
 
 proc confirmAndRemoveDir(dir: string) =
   warn "Delete directory '$1' and all its contents? [y/n]" % dir
@@ -111,12 +123,7 @@ for kind, key, val in getopt():
           echo version
           quit(0)
         else:
-          var v: JsonNode
-          if val == "true" or val == "":
-            v = %true
-          else:
-            v = %val
-          opts.add NiftyOption(key: key, val: v)
+          discard
     else:
       discard
 
@@ -184,12 +191,17 @@ case args[0]:
     if args.len < 2:
       fatal "No package alias specified."
       quit(3)
-    prj.map(args[1], %opts) 
+    notice "Mapping package alias: " & args[1] 
+    warn "Specify properties for alias '$1':" % [args[1]]
+    var props = newJObject()
+    addProperties(props)
+    prj.map(args[1], %props) 
   of "unmap":
     if args.len < 2:
       fatal "No package alias specified."
       quit(3)
-    prj.unmap(args[1]) 
+    if confirm("Remove mapping for package alias '$1'?" % args[1]):
+      prj.unmap(args[1]) 
   of "remove":
     prj.load
     if args.len < 2:
