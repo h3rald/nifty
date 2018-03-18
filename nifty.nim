@@ -19,12 +19,6 @@ import
   lib/config,
   lib/project
 
-when defined(windows):
-   proc putchr*(c: cint): cint {.discardable, header: "<conio.h>", importc: "_putch".}
-else:
-  proc putchr*(c: cint) =
-    stdout.write(c.chr)
-
 proc confirm(q: string): bool =
   stdout.setForegroundColor(fgYellow)
   stdout.write("(!) " & q & " [y/n]: ")
@@ -34,28 +28,42 @@ proc confirm(q: string): bool =
     return true
   return false
 
-proc addProperty(): tuple[key: string, value: JsonNode] =
+proc addProperty(parentObj: JsonNode): tuple[key: string, value: JsonNode] =
   var done = false
   while (not done):
     stdout.setForegroundColor(fgBlue)
     stdout.write("    -> Name: ")
     resetAttributes()
     result.key = stdin.readLine
-    stdout.setForegroundColor(fgBlue)
-    stdout.write("    -> Value: ")
-    resetAttributes()
-    try:
-      result.value = %*stdin.readLine
-    except:
-      warn("Invalid value; please enter a valid JSON value.")
-    done = confirm("OK?")
+    var ok = false
+    while (not ok):
+      var label = "    -> Value: "
+      stdout.setForegroundColor(fgBlue)
+      if parentObj.hasKey(result.key):
+        echo "    -> Existing Value: $1" % $parentObj[result.key]
+        label = "    ->      New Value: "
+      stdout.write(label)
+      resetAttributes()
+      try:
+        result.value = stdin.readLine.parseJson
+        if (result.value == newJNull()):
+          ok = confirm("Remove property '$1'?" % result.key)
+          done = true
+        else:
+          ok = true
+      except:
+        warn("Please enter a valid JSON value.")
+    done = done or confirm("OK?")
 
 proc addProperties(obj: var JsonNode) =
   var done = false
   while (not done):
-    let prop = addProperty()
+    let prop = addProperty(obj)
     obj[prop.key] = prop.value
-    done = not confirm("Do you want to add more properties?")
+    done = not confirm("Do you want to add/remove more properties?")
+  for k, v in obj.mpairs:
+    if v == newJNull():
+      obj.delete(k)
 
 proc changeValue(oldv: tuple[label: string, value: JsonNode], newv: tuple[label: string, value: JsonNode]): bool =
   if oldv.value != newJNull():
