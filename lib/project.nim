@@ -13,6 +13,9 @@ type
     commands*: JsonNode
     packages*: JsonNode
 
+
+const niftyTpl = "nifty.json".slurp
+
 let placeholder = peg"'{{' {[^}]+} '}}'"
 
 proc newNiftyProject*(dir: string): NiftyProject =
@@ -27,23 +30,7 @@ proc configured*(prj: NiftyProject): bool =
 proc init*(prj: var NiftyProject, storage: string) =
   prj.storage = storage
   createDir(prj.dir/prj.storage)
-  var o = newJObject()
-  o["storage"] = %prj.storage
-  o["commands"] = newJObject()
-  o["commands"]["install"] = newJObject()
-  o["commands"]["install"]["git+src"] = newJObject()
-  o["commands"]["install"]["git+src"]["cmd"] = %"git clone {{src}} --depth 1"
-  o["commands"]["install"]["git+src+tag"] = newJObject()
-  o["commands"]["install"]["git+src+tag"]["cmd"] = %"git clone --branch {{tag}} {{src}} --depth 1"
-  o["commands"]["install"]["curl+src+name"] = newJObject()
-  o["commands"]["install"]["curl+src+name"]["cmd"] = %"curl {{src}} -o {{name}}"
-  o["commands"]["update"] = newJObject()
-  o["commands"]["update"]["git+name"] = newJObject()
-  o["commands"]["update"]["git+name"]["cmd"] = %"git pull"
-  o["commands"]["update"]["git+name"]["pwd"] = %"{{name}}"
-  o["commands"]["update"]["curl+src+name"] = newJObject()
-  o["commands"]["update"]["curl+src+name"]["cmd"] = %"curl {{src}} -o {{name}}"
-  o["packages"] = newJObject()
+  var o = %*(niftyTpl % [prj.storage])
   prj.configFile.writeFile(o.pretty)
 
 proc load*(prj: var NiftyProject) =

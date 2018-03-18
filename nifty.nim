@@ -1,7 +1,8 @@
 import 
   json,
   os,
-  parseopt2,
+  ospaths,
+  parseopt,
   logging,
   strutils,
   sequtils
@@ -21,7 +22,15 @@ type
     key: string
     val: JsonNode
 
+when defined(windows):
+   proc putchr*(c: cint): cint {.discardable, header: "<conio.h>", importc: "_putch".}
+else:
+  proc putchr*(c: cint) =
+    stdout.write(c.chr)
+
+
 let usage* = """  $1 v$2 - $3
+  (c) 2017-2018 Fabio Cevasco
   Commands:
     init [--storage:<dir>]                Initializes a project in the current directory.
     map <package> [--<property>:<value>]  Defines <package> with the specified properties.
@@ -93,6 +102,16 @@ for kind, key, val in getopt():
     else:
       discard
 
+proc walkPkgs(prj: NiftyProject, dir: string, level = 1) =
+  for k, v in prj.packages.pairs:
+    echo " ".repeat(level*2) &  "-" & " " & k
+    var d = dir / prj.storage / k
+    var p = newNiftyProject(d)
+    if p.configured:
+      p.load
+      walkPkgs(p, d, level+1)
+
+
 var prj = newNiftyProject(getCurrentDir())
 
 if args.len == 0:
@@ -126,6 +145,12 @@ case args[0]:
           confirmAndRemovePackage(prj.storage/key)
     else:
       confirmAndRemovePackage(prj.storage/args[1])
+  of "list":
+    prj.load
+    let pwd = getCurrentDir()
+    let parts = pwd.split(DirSep)
+    echo parts[parts.len-1]
+    walkPkgs(prj, pwd)
   else:
     if args.len < 1:
       echo usage
