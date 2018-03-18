@@ -1,0 +1,37 @@
+{
+  "help":
+  {
+    "_syntax": "help [<command>]",
+    "_description": "Display help on the specified command (or all commands)."
+  },
+  "info":
+  {
+    "_syntax": "info <package>",
+    "_description": "Displays information on <package>"
+  },
+  "init":
+  {
+    "_syntax": "init [<storage-dir>]",
+    "_description": "Initializes a project in the current directory (using <storage-dir> as storage directory)."
+  },
+  "list":
+  {
+    "_syntax": "list",
+    "_description": "Lists all dependencies (recursively) of the current project."
+  },
+  "map":
+  {
+    "_syntax": "map <package> [--<property>_<value>]",
+    "_description": "Defines <package> with the specified properties."
+  },
+  "remove":
+  {
+    "_syntax": "remove [<package>]",
+    "_description": "Removes the specified package (or all packages) from the storage directory."
+  },
+  "unmap":
+  {
+    "_syntax": "unmap <package>",
+    "_description": "Unmaps the previously-mapped package <package>."
+  }
+}

@@ -13,8 +13,8 @@ type
     commands*: JsonNode
     packages*: JsonNode
 
-
 const niftyTpl = "nifty.json".slurp
+const systemHelp = "help.json".slurp
 
 let placeholder = peg"'{{' {[^}]+} '}}'"
 
@@ -42,6 +42,17 @@ proc load*(prj: var NiftyProject) =
   prj.storage.createDir()
   prj.commands = cfg["commands"]
   prj.packages = cfg["packages"]
+
+proc help*(prj: NiftyProject): JsonNode =
+  result = systemHelp.parseJson
+  for k, v in prj.commands.pairs:
+    if v.hasKey("_syntax") and v.hasKey("_description"):
+      result[k] = %*("""
+        {
+          "_syntax": "$1",
+          "_description": "$2"
+        }
+      """ % [v["_syntax"].getStr, v["_description"].getStr])
 
 proc save*(prj: NiftyProject) = 
   var o = newJObject()

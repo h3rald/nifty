@@ -31,21 +31,18 @@ else:
 
 let usage* = """  $1 v$2 - $3
   (c) 2017-2018 Fabio Cevasco
-  Commands:
-    init [--storage:<dir>]                Initializes a project in the current directory.
-    map <package> [--<property>:<value>]  Defines <package> with the specified properties.
-    unmap <package>                       Unmaps a previously-mapped package <package>.
-    remove <package>                      Removes <storage-dir>/<package> directory
-                                          and all its contents.
-    <command> [<package>]                 Executes <command> (on <package>).
+
+  Usage:
+    nifty <command> [<package>]           Executes <command> (on <package>).
+
+    For more information on available commands, run: nifty help
+
   Options:
-    --log, -l               Specifies the log level (default: info).
+    --log, -l               Specifies the log level (debug|info|notice|warn|error|fatal).
+                            Default: info
     --help, -h              Displays this message.
     --version, -h           Displays the version of the application.
-    --storage, -s           Specifies what directory to use for storing packages.
 """ % [appname, version, appdesc]
-
-var storage = "packages"
 
 var args = newSeq[string](0)
 var opts = newSeq[NiftyOption](0)
@@ -90,8 +87,6 @@ for kind, key, val in getopt():
         of "version", "v":
           echo version
           quit(0)
-        of "storage", "s":
-          storage = val
         else:
           var v: JsonNode
           if val == "true" or val == "":
@@ -122,16 +117,19 @@ case args[0]:
     if prj.configured:
       fatal "Project already configured."
       quit(2)
+    var storage = "packages"
+    if args.len > 2:
+      storage = args[1]
     prj.init(storage)
     notice "Project initialized using '$1' as storage directory." % storage
   of "map":
     if args.len < 2:
-      fatal "No alias specified."
+      fatal "No package alias specified."
       quit(3)
     prj.map(args[1], %opts) 
   of "unmap":
     if args.len < 2:
-      fatal "No alias specified."
+      fatal "No package alias specified."
       quit(3)
     prj.unmap(args[1]) 
   of "remove":
@@ -151,6 +149,29 @@ case args[0]:
     let parts = pwd.split(DirSep)
     echo parts[parts.len-1]
     walkPkgs(prj, pwd)
+  of "info":
+    if args.len < 2:
+      fatal "No package alias specified."
+      quit(3)
+    prj.load
+    let alias = args[1]
+    if not prj.packages.hasKey(alias):
+      fatal "Package alias '$1' not defined." % [alias]
+      quit(4)
+    let data = prj.packages[alias]
+    for k, v in data.pairs:
+      echo "$1:\t$2" % [k, $v]
+  of "help":
+    prj.load
+    if args.len < 2:
+      for k, v in prj.help.pairs:
+        echo "nifty $1\n    $2" % [v["_syntax"].getStr, v["_description"].getStr]
+    else:
+      let cmd = args[1]
+      if not prj.help.hasKey(cmd):
+        fatal "Command '$1' is not defined." % cmd
+        quit(5)
+      echo "nifty $1\n    $2" % [prj.help[cmd]["_syntax"].getStr, prj.help[cmd]["_description"].getStr]
   else:
     if args.len < 1:
       echo usage
