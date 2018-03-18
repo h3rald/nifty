@@ -5,6 +5,8 @@ import
   parseopt,
   logging,
   strutils,
+  terminal,
+  pegs,
   sequtils
 
 import
@@ -28,6 +30,27 @@ else:
   proc putchr*(c: cint) =
     stdout.write(c.chr)
 
+proc confirm(q: string): bool =
+  stdout.setForegroundColor(fgYellow)
+  stdout.write("(!) " & q & " [y/n]: ")
+  resetAttributes()
+  let answer = stdin.readLine
+  if answer.match(peg"^ i'y' / i'yes' $"):
+    return true
+  return false
+
+proc changeValue(oldv: tuple[label: string, value: JsonNode], newv: tuple[label: string, value: JsonNode]): bool =
+  if oldv.value != newJNull():
+    stdout.setForegroundColor(fgRed)
+    stdout.write("--- ")
+    resetAttributes()
+    echo oldv.label & ": " & $oldv.value
+  if newv.value != newJNull():
+    stdout.setForegroundColor(fgGreen)
+    stdout.write("+++ ")
+    resetAttributes()
+    echo newv.label & ": " & $newv.value 
+  return confirm("Confirm change?")
 
 let usage* = """  $1 v$2 - $3
   (c) 2017-2018 Fabio Cevasco
@@ -106,6 +129,41 @@ proc walkPkgs(prj: NiftyProject, dir: string, level = 1) =
       p.load
       walkPkgs(p, d, level+1)
 
+proc updateDefinitions(prj: var NiftyProject): bool =
+  result = false
+  let sysCommands = niftyTpl.parseJson["commands"]
+  for k, v in sysCommands.pairs:
+    if prj.commands.hasKey(k):
+      let sysCommand = sysCommands[k]
+      var prjCommand = prj.commands[k]
+      for prop, val in sysCommand.pairs:
+        let sysProp = sysCommand[prop]
+        var prjProp = newJNull()
+        if prjCommand.hasKey(prop):
+          prjProp = prjCommand[prop]
+        if prjProp != newJNull():
+          if prjProp != sysProp:
+            let sysVal = (label: k & "." & prop, value: sysProp)
+            let prjVal = (label: k & "." & prop, value: prjProp)
+            if changeValue(prjVal, sysVal):
+              prjCommand[prop] = sysProp
+              result = true
+        else:
+          result = true
+          # Adding new property
+          stdout.setForegroundColor(fgGreen)
+          stdout.write("+++ ")
+          resetAttributes()
+          echo "$1.$2: $3" % [k, prop, $sysProp] 
+          prjCommand[prop] = sysProp
+    else:
+      result = true
+      # Adding new command
+      stdout.setForegroundColor(fgGreen)
+      stdout.write("+++ ")
+      resetAttributes()
+      echo "$1: $2" % [k, $sysCommands[k]] 
+      prj.commands[k] = sysCommands[k]
 
 var prj = newNiftyProject(getCurrentDir())
 
@@ -172,6 +230,10 @@ case args[0]:
         fatal "Command '$1' is not defined." % cmd
         quit(5)
       echo "nifty $1\n    $2" % [prj.help[cmd]["_syntax"].getStr, prj.help[cmd]["_description"].getStr]
+  of "update-definitions":
+    prj.load
+    if updateDefinitions(prj):
+      prj.save
   else:
     if args.len < 1:
       echo usage

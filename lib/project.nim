@@ -13,7 +13,7 @@ type
     commands*: JsonNode
     packages*: JsonNode
 
-const niftyTpl = "nifty.json".slurp
+const niftyTpl* = "nifty.json".slurp
 const systemHelp = "help.json".slurp
 
 let placeholder = peg"'{{' {[^}]+} '}}'"
