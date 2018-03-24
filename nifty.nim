@@ -5,7 +5,6 @@ import
   parseopt,
   logging,
   strutils,
-  terminal,
   sequtils
 
 import
@@ -17,44 +16,43 @@ setLogFilter(lvlInfo)
 import
   lib/config,
   lib/project,
-  lib/minimline
+  lib/messaging
 
-proc confirm(q: string): bool =
-  stdout.setForegroundColor(fgYellow)
-  stdout.write("(!) " & q & " [y/n]: ")
-  resetAttributes()
-  var ed = initEditor()
-  let answer = ed.readLine().toLowerAscii[0]
-  if answer == 'y':
-    return true
-  return false
+let usage* = """  $1 v$2 - $3
+  (c) 2017-2018 Fabio Cevasco
+
+  Usage:
+    nifty <command> [<package>]           Executes <command> (on <package>).
+
+    For more information on available commands, run: nifty help
+
+  Options:
+    --log, -l               Specifies the log level (debug|info|notice|warn|error|fatal).
+                            Default: info
+    --help, -h              Displays this message.
+    --version, -h           Displays the version of the application.
+""" % [appname, version, appdesc]
+
+
+# Helper Methods
 
 proc addProperty(parentObj: JsonNode, name = ""): tuple[key: string, value: JsonNode] =
   var done = false
   while (not done):
     if name == "":
-      stdout.setForegroundColor(fgBlue)
-      stdout.write("    -> Name: ")
-      resetAttributes()
-      result.key = stdin.readLine
+      result.key = editValue("Name")
     elif name == "name":
       warn "Property identifier 'name' cannot be modified."
     else:
-      stdout.setForegroundColor(fgBlue)
-      echo "    -> Name: " & name
-      resetAttributes()
+      printValue(" Name", name)
       result.key = name
     var ok = false
     while (not ok):
-      stdout.setForegroundColor(fgBlue)
-      stdout.write("    -> Value: ")
-      resetAttributes()
-      var ed = initEditor()
       var value = ""
       if parentObj.hasKey(result.key):
         value = $parentObj[result.key]
       try:
-        result.value = ed.edit(value).parseJson
+        result.value = editValue("Value", value).parseJson
         if (result.value == newJNull()):
           ok = confirm("Remove property '$1'?" % result.key)
           done = true
@@ -73,33 +71,10 @@ proc addProperties(obj: var JsonNode) =
 
 proc changeValue(oldv: tuple[label: string, value: JsonNode], newv: tuple[label: string, value: JsonNode]): bool =
   if oldv.value != newJNull():
-    stdout.setForegroundColor(fgRed)
-    stdout.write("--- ")
-    resetAttributes()
-    echo oldv.label & ": " & $oldv.value
+    printDeleted(oldv.label, $oldv.value)
   if newv.value != newJNull():
-    stdout.setForegroundColor(fgGreen)
-    stdout.write("+++ ")
-    resetAttributes()
-    echo newv.label & ": " & $newv.value 
+    printAdded(newv.label, $newv.value)
   return confirm("Confirm change?")
-
-let usage* = """  $1 v$2 - $3
-  (c) 2017-2018 Fabio Cevasco
-
-  Usage:
-    nifty <command> [<package>]           Executes <command> (on <package>).
-
-    For more information on available commands, run: nifty help
-
-  Options:
-    --log, -l               Specifies the log level (debug|info|notice|warn|error|fatal).
-                            Default: info
-    --help, -h              Displays this message.
-    --version, -h           Displays the version of the application.
-""" % [appname, version, appdesc]
-
-var args = newSeq[string](0)
 
 proc confirmAndRemoveDir(dir: string) =
   let answer = confirm "Delete directory '$1' and all its contents? [y/n]" % dir
@@ -118,26 +93,6 @@ proc confirmAndRemovePackage(pkg: string) =
     pkg.confirmAndRemoveDir()
   else:
     warn "Package '$1' not found." % pkg
-
-for kind, key, val in getopt():
-  case kind:
-    of cmdArgument:
-      args.add key 
-    of cmdLongOption, cmdShortOption:
-      case key:
-        of "log", "l":
-          var val = val
-          setLogLevel(val)
-        of "help", "h":
-          echo usage
-          quit(0)
-        of "version", "v":
-          echo version
-          quit(0)
-        else:
-          discard
-    else:
-      discard
 
 proc walkPkgs(prj: NiftyProject, dir: string, level = 1) =
   for k, v in prj.packages.pairs:
@@ -170,19 +125,37 @@ proc updateDefinitions(prj: var NiftyProject): bool =
         else:
           result = true
           # Adding new property
-          stdout.setForegroundColor(fgGreen)
-          stdout.write("+++ ")
-          resetAttributes()
-          echo "$1.$2: $3" % [k, prop, $sysProp] 
+          printAdded("$1.$2" % [k, prop], $sysProp)
           prjCommand[prop] = sysProp
     else:
       result = true
       # Adding new command
-      stdout.setForegroundColor(fgGreen)
-      stdout.write("+++ ")
-      resetAttributes()
-      echo "$1: $2" % [k, $sysCommands[k]] 
+      printAdded(k, $sysCommands[k])
       prj.commands[k] = sysCommands[k]
+
+### MAIN ###
+
+var args = newSeq[string](0)
+
+for kind, key, val in getopt():
+  case kind:
+    of cmdArgument:
+      args.add key 
+    of cmdLongOption, cmdShortOption:
+      case key:
+        of "log", "l":
+          var val = val
+          setLogLevel(val)
+        of "help", "h":
+          echo usage
+          quit(0)
+        of "version", "v":
+          echo version
+          quit(0)
+        else:
+          discard
+    else:
+      discard
 
 var prj = newNiftyProject(getCurrentDir())
 
@@ -264,16 +237,15 @@ case args[0]:
   of "help":
     if args.len < 2:
       for k, v in prj.help.pairs:
-        stdout.setForegroundColor(fgGreen)
-        echo "nifty $1" % v["_syntax"].getStr
-        resetAttributes()
-        echo "    $1" % v["_description"].getStr
+        printGreen "nifty $1" % v["_syntax"].getStr
+        echo "\n    $1" % v["_description"].getStr
     else:
       let cmd = args[1]
       if not prj.help.hasKey(cmd):
         fatal "Command '$1' is not defined." % cmd
         quit(5)
-      echo "nifty $1\n    $2" % [prj.help[cmd]["_syntax"].getStr, prj.help[cmd]["_description"].getStr]
+      printGreen "nifty " & prj.help[cmd]["_syntax"].getStr
+      echo "\n    " & prj.help[cmd]["_description"].getStr
   of "update-commands":
     prj.load
     if updateDefinitions(prj):
