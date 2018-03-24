@@ -6,7 +6,6 @@ import
   logging,
   strutils,
   terminal,
-  pegs,
   sequtils
 
 import
@@ -17,14 +16,16 @@ setLogFilter(lvlInfo)
 
 import
   lib/config,
-  lib/project
+  lib/project,
+  lib/minimline
 
 proc confirm(q: string): bool =
   stdout.setForegroundColor(fgYellow)
   stdout.write("(!) " & q & " [y/n]: ")
   resetAttributes()
-  let answer = stdin.readLine
-  if answer.match(peg"^ i'y' / i'yes' $"):
+  var ed = initEditor()
+  let answer = ed.readLine().toLowerAscii[0]
+  if answer == 'y':
     return true
   return false
 
@@ -45,15 +46,15 @@ proc addProperty(parentObj: JsonNode, name = ""): tuple[key: string, value: Json
       result.key = name
     var ok = false
     while (not ok):
-      var label = "    -> Value: "
       stdout.setForegroundColor(fgBlue)
-      if parentObj.hasKey(result.key):
-        echo "    -> Existing Value: $1" % $parentObj[result.key]
-        label = "    ->      New Value: "
-      stdout.write(label)
+      stdout.write("    -> Value: ")
       resetAttributes()
+      var ed = initEditor()
+      var value = ""
+      if parentObj.hasKey(result.key):
+        value = $parentObj[result.key]
       try:
-        result.value = stdin.readLine.parseJson
+        result.value = ed.edit(value).parseJson
         if (result.value == newJNull()):
           ok = confirm("Remove property '$1'?" % result.key)
           done = true
@@ -101,15 +102,13 @@ let usage* = """  $1 v$2 - $3
 var args = newSeq[string](0)
 
 proc confirmAndRemoveDir(dir: string) =
-  warn "Delete directory '$1' and all its contents? [y/n]" % dir
-  let answer = stdin.readLine.toLowerAscii[0]
-  if answer == 'y':
+  let answer = confirm "Delete directory '$1' and all its contents? [y/n]" % dir
+  if answer:
     dir.removeDir()
 
 proc confirmAndRemoveFile(file: string) =
-  warn "Delete file '$1'? [y/n]" % file 
-  let answer = stdin.readLine.toLowerAscii[0]
-  if answer == 'y':
+  let answer = confirm "Delete file '$1'? [y/n]" % file 
+  if answer: 
     file.removeFile()
 
 proc confirmAndRemovePackage(pkg: string) =
