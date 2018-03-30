@@ -57,7 +57,7 @@ proc printAdded*(label, value: string) =
   echo label & ": " & value
 
 when defined(windows):
-  proc ch(s): string =
+  proc ch(s: string): string =
     case s:
       of "└":
         return $(192.chr)
