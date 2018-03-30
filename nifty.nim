@@ -24,7 +24,7 @@ let usage* = """  $1 v$2 - $3
   Usage:
     nifty <command> [<package>]           Executes <command> (on <package>).
 
-    For more information on available commands, run: nifty help
+    => For more information on available commands, run: nifty help
 
   Options:
     --log, -l               Specifies the log level (debug|info|notice|warn|error|fatal).
@@ -77,7 +77,7 @@ proc changeValue(oldv: tuple[label: string, value: JsonNode], newv: tuple[label:
   return confirm("Confirm change?")
 
 proc confirmAndRemoveDir(dir: string) =
-  let answer = confirm "Delete directory '$1' and all its contents? [y/n]" % dir
+  let answer = confirm "Delete directory '$1' and all its contents?" % dir
   if answer:
     dir.removeDir()
 
@@ -94,14 +94,17 @@ proc confirmAndRemovePackage(pkg: string) =
   else:
     warn "Package '$1' not found." % pkg
 
-proc walkPkgs(prj: NiftyProject, dir: string, level = 1) =
+proc listPackages(prj: NiftyProject, dir: string): TreeNode =
+  var node = newTreeNode(dir.extractFilename)
   for k, v in prj.packages.pairs:
-    echo " ".repeat(level*2) &  "-" & " " & k
     var d = dir / prj.storage / k
     var p = newNiftyProject(d)
     if p.configured:
       p.load
-      walkPkgs(p, d, level+1)
+      node.add listPackages(p, d)
+    else:
+      node.add newTreeNode(k)
+  return node
 
 proc updateDefinitions(prj: var NiftyProject): bool =
   result = false
@@ -200,6 +203,7 @@ case args[0]:
       fatal "No package specified."
       quit(3)
     let alias = args[1]
+    prj.load
     if not prj.packages.hasKey(alias):
       fatal "Package '$1' not defined." % [alias]
       quit(4)
@@ -219,9 +223,7 @@ case args[0]:
   of "list":
     prj.load
     let pwd = getCurrentDir()
-    let parts = pwd.split(DirSep)
-    echo parts[parts.len-1]
-    walkPkgs(prj, pwd)
+    echo listPackages(prj, pwd).tree
   of "info":
     if args.len < 2:
       fatal "No package specified."
@@ -235,17 +237,19 @@ case args[0]:
     for k, v in data.pairs:
       echo "$1:\t$2" % [k, $v]
   of "help":
+    echo ""
     if args.len < 2:
       for k, v in prj.help.pairs:
-        printGreen "nifty $1" % v["_syntax"].getStr
-        echo "\n    $1" % v["_description"].getStr
+        printGreen "   nifty $1" % v["_syntax"].getStr
+        echo "\n      $1\n" % v["_description"].getStr
     else:
       let cmd = args[1]
+      let help = prj.help[cmd]
       if not prj.help.hasKey(cmd):
         fatal "Command '$1' is not defined." % cmd
         quit(5)
-      printGreen "nifty " & prj.help[cmd]["_syntax"].getStr
-      echo "\n    " & prj.help[cmd]["_description"].getStr
+      printGreen "   nifty " & help["_syntax"].getStr
+      echo "\n      $1\n" % help["_description"].getStr
   of "update-commands":
     prj.load
     if updateDefinitions(prj):
