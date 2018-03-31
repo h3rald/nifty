@@ -2,7 +2,7 @@
 name          = "nifty"
 version       = "1.0.0"
 author        = "Fabio Cevasco"
-description   = "A pseudo package manager and script runner."
+description   = "A decentralized (pseudo) package manager and script runner."
 license       = "MIT"
 bin           = "nifty"
 

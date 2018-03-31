@@ -94,14 +94,14 @@ proc confirmAndRemovePackage(pkg: string) =
   else:
     warn "Package '$1' not found." % pkg
 
-proc listPackages(prj: NiftyProject, dir: string): TreeNode =
+proc buildTree(prj: NiftyProject, dir: string): TreeNode =
   var node = newTreeNode(dir.extractFilename)
   for k, v in prj.packages.pairs:
     var d = dir / prj.storage / k
     var p = newNiftyProject(d)
     if p.configured:
       p.load
-      node.add listPackages(p, d)
+      node.add buildTree(p, d)
     else:
       node.add newTreeNode(k)
   return node
@@ -223,7 +223,7 @@ case args[0]:
   of "list":
     prj.load
     let pwd = getCurrentDir()
-    echo listPackages(prj, pwd).tree
+    echo buildTree(prj, pwd).tree
   of "info":
     if args.len < 2:
       fatal "No package specified."
