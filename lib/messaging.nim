@@ -92,7 +92,7 @@ proc tree*(node: TreeNode, prefix = ""): string =
     let lastPart = if last: ch("└") else: ch("├")
     let morePart = if more: ch("┬") else: ch("─")
     let rec = tree(x, newPrefix)
-    var offset = 3
+    var offset = if  ch("└").len > 1: 3 else: 1
     var endSpace = ""
     if lastPart == ch("└"):
       offset = 2
