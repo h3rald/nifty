@@ -1,5 +1,5 @@
 ![nim](https://img.shields.io/badge/nim-powered-yellow.svg?link=https://nim-lang-org)
-![Release](https://img.shields.io/github/release/h3rald/nifty.svg)](https://github.com/h3rald/nifty)
+![Release](https://img.shields.io/github/release/h3rald/nifty.svg)
 ![license](https://img.shields.io/github/license/h3rald/nifty.svg)
 
 # Nifty
