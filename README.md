@@ -48,3 +48,5 @@ You can use your `nifty.json` to teach *nifty* new tricks, i.e. how to execute n
 * `nifty update` &middot; Updates the command definitions for the current project and migrate nifty.json file (if necessary).
 * `nifty install [<package>]` &middot; Installs the specified package (or all mapped packages) to the storage directory.
 * `nifty upgrade [<package>]` &middot; Upgrades the specified previously-installed package (or all packages).
+  
+&rarr; For more information, see the [Nifty User Guide](https://h3rald.com/nifty/Nifty_UserGuide.htm).
