@@ -37,13 +37,13 @@ You can use your `nifty.json` to teach *nifty* new tricks, i.e. how to execute n
 
 ## Usage
 
-* `nifty help [lt;commandgt;]` &middot; Display help on the specified command (or all commands).
-* `nifty info lt;packagegt;` &middot; Displays information on lt;packagegt;
-* `nifty init [lt;storage-dirgt;]` &middot; Initializes a project in the current directory (using lt;storage-dirgt; as storage directory).
+* `nifty help [<command>]` &middot; Display help on the specified command (or all commands).
+* `nifty info <package>` &middot; Displays information on <package>
+* `nifty init [<storage-dir>]` &middot; Initializes a project in the current directory (using <storage-dir> as storage directory).
 * `nifty list` &middot; Lists all dependencies (recursively) of the current project.
-* `nifty map lt;packagegt;` &middot; Configures a new or existing package lt;packagegt;.
-* `nifty remove [lt;packagegt;]` &middot; Removes the specified package (or all packages) from the storage directory.
-* `nifty unmap lt;packagegt;` &middot; Unmaps the previously-mapped package lt;packagegt;.
+* `nifty map <package>` &middot; Configures a new or existing package <package>.
+* `nifty remove [<package>]` &middot; Removes the specified package (or all packages) from the storage directory.
+* `nifty unmap <package>` &middot; Unmaps the previously-mapped package <package>.
 * `nifty update` &middot; Updates the command definitions for the current project and migrate nifty.json file (if necessary).
-* `nifty install [lt;packagegt;]` &middot; Installs the specified package (or all mapped packages) to the storage directory.
-* `nifty upgrade [lt;packagegt;]` &middot; Upgrades the specified previously-installed package (or all packages).
+* `nifty install [<package>]` &middot; Installs the specified package (or all mapped packages) to the storage directory.
+* `nifty upgrade [<package>]` &middot; Upgrades the specified previously-installed package (or all packages).
