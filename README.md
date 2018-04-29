@@ -37,23 +37,13 @@ You can use your `nifty.json` to teach *nifty* new tricks, i.e. how to execute n
 
 ## Usage
 
-nifty help [lt;commandgt;]
-: Display help on the specified command (or all commands).
-nifty info lt;packagegt;
-: Displays information on lt;packagegt;
-nifty init [lt;storage-dirgt;]
-: Initializes a project in the current directory (using lt;storage-dirgt; as storage directory).
-nifty list
-: Lists all dependencies (recursively) of the current project.
-nifty map lt;packagegt;
-: Configures a new or existing package lt;packagegt;.
-nifty remove [lt;packagegt;]
-: Removes the specified package (or all packages) from the storage directory.
-nifty unmap lt;packagegt;
-: Unmaps the previously-mapped package lt;packagegt;.
-nifty update
-: Updates the command definitions for the current project and migrate nifty.json file (if necessary).
-nifty install [lt;packagegt;]
-: Installs the specified package (or all mapped packages) to the storage directory.
-nifty upgrade [lt;packagegt;]
-: Upgrades the specified previously-installed package (or all packages).
+* `nifty help [lt;commandgt;]` &middot; Display help on the specified command (or all commands).
+* `nifty info lt;packagegt;` &middot; Displays information on lt;packagegt;
+* `nifty init [lt;storage-dirgt;]` &middot; Initializes a project in the current directory (using lt;storage-dirgt; as storage directory).
+* `nifty list` &middot; Lists all dependencies (recursively) of the current project.
+* `nifty map lt;packagegt;` &middot; Configures a new or existing package lt;packagegt;.
+* `nifty remove [lt;packagegt;]` &middot; Removes the specified package (or all packages) from the storage directory.
+* `nifty unmap lt;packagegt;` &middot; Unmaps the previously-mapped package lt;packagegt;.
+* `nifty update` &middot; Updates the command definitions for the current project and migrate nifty.json file (if necessary).
+* `nifty install [lt;packagegt;]` &middot; Installs the specified package (or all mapped packages) to the storage directory.
+* `nifty upgrade [lt;packagegt;]` &middot; Upgrades the specified previously-installed package (or all packages).
