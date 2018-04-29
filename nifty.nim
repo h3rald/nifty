@@ -250,7 +250,7 @@ case args[0]:
         quit(5)
       printGreen "   nifty " & help["_syntax"].getStr
       echo "\n      $1\n" % help["_description"].getStr
-  of "update-commands":
+  of "update":
     prj.load
     if updateDefinitions(prj):
       prj.save

@@ -27,16 +27,16 @@
   "remove":
   {
     "_syntax": "remove [<package>]",
-    "_description": "Removes the specified package (or all packages) from the storage directory."
+    "_description": "Physically deletes the specified package (or all packages) from the storage directory."
   },
   "unmap":
   {
     "_syntax": "unmap <package>",
     "_description": "Unmaps the previously-mapped package <package>."
   },
-  "update-commands":
+  "update":
   {
-    "_syntax": "update-commands",
-    "_description": "Updates the command definitions for the current project."
+    "_syntax": "update",
+    "_description": "Updates the command definitions for the current project and migrate nifty.json file (if necessary)."
   }
 }

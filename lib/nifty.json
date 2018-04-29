@@ -19,10 +19,10 @@
         "cmd": "curl {{src}} -o {{name}}"
       }
     }, 
-    "update": 
+    "upgrade": 
     {
-      "_syntax": "update [<package>]",
-      "_description": "Updates the specified previously-installed package (or all packages).",
+      "_syntax": "upgrade [<package>]",
+      "_description": "Upgrades the specified previously-installed package (or all packages).",
       "git+name": 
       {
         "cmd": "git pull", 
