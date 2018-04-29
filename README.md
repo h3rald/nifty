@@ -1,5 +1,6 @@
-[![Release](https://img.shields.io/github/release/h3rald/nifty.svg)](https://github.com/h3rald/nifty)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/h3rald/nifty/master/LICENSE)
+![nim](https://img.shields.io/badge/nim-powered-yellow.svg?link=https://nim-lang-org)
+![Release](https://img.shields.io/github/release/h3rald/nifty.svg)](https://github.com/h3rald/nifty)
+![license](https://img.shields.io/github/license/h3rald/nifty.svg)
 
 # Nifty
 
