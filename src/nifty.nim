@@ -29,10 +29,12 @@ let usage* = """  $1 v$2 - $3
   Options:
     --log, -l               Specifies the log level (debug|info|notice|warn|error|fatal).
                             Default: info
+    --force, -f             Do not ask for confirmation when executing the specified command.
     --help, -h              Displays this message.
     --version, -h           Displays the version of the application.
 """ % [pkgTitle, pkgVersion, pkgDescription, pkgAuthor]
 
+var force = false
 
 # Helper Methods
 
@@ -77,12 +79,12 @@ proc changeValue(oldv: tuple[label: string, value: JsonNode], newv: tuple[label:
   return confirm("Confirm change?")
 
 proc confirmAndRemoveDir(dir: string) =
-  let answer = confirm "Delete directory '$1' and all its contents?" % dir
+  let answer = force or confirm "Delete directory '$1' and all its contents?" % dir
   if answer:
     dir.removeDir()
 
 proc confirmAndRemoveFile(file: string) =
-  let answer = confirm "Delete file '$1'? [y/n]" % file 
+  let answer = force or confirm "Delete file '$1'? [y/n]" % file 
   if answer: 
     file.removeFile()
 
@@ -146,6 +148,8 @@ for kind, key, val in getopt():
       args.add key 
     of cmdLongOption, cmdShortOption:
       case key:
+        of "force", "f":
+          force = true
         of "log", "l":
           var val = val
           setLogLevel(val)
@@ -175,6 +179,9 @@ case args[0]:
       storage = args[1]
     prj.init(storage)
     notice "Project initialized using '$1' as storage directory." % storage
+  of "purge":
+    prj.load
+    confirmAndRemoveDir(prj.dir/prj.storage) 
   of "map":
     if args.len < 2:
       fatal "No package specified."
@@ -207,7 +214,7 @@ case args[0]:
     if not prj.packages.hasKey(alias):
       fatal "Package '$1' not defined." % [alias]
       quit(4)
-    if confirm("Remove mapping for package '$1'?" % alias):
+    if force or confirm("Remove mapping for package '$1'?" % alias):
       prj.unmap(alias) 
   of "remove":
     prj.load

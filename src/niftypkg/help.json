@@ -24,6 +24,11 @@
     "_syntax": "map <package>",
     "_description": "Configures a new or existing package <package>."
   },
+  "purge":
+  {
+    "_syntax": "purge",
+    "_description": "Deletes the storage directory and all its contents."
+  },
   "remove":
   {
     "_syntax": "remove [<package>]",

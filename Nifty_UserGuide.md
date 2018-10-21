@@ -423,6 +423,9 @@ Configures a new or existing package &lt;package&gt;.
 
 The configuration of the package properly is interactive: {{n}} will prompt whether you want to add or modify properties.#}
 
+{#command||purge||purge||
+Deletes the storage directory and all its contents.#}
+
 {#command||remove||remove [<package>]||
 Physically deletes the specified package (or all packages) from the storage directory.
 
