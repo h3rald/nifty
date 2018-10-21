@@ -12,7 +12,6 @@ else:
 
 # Package
 
-name          = pkgTitle
 version       = pkgVersion
 author        = pkgAuthor
 description   = pkgDescription
@@ -77,4 +76,4 @@ task release, "Release nifty":
   macosx_x64_buildTask()
   shell zip, filename_for("macosx", "x64"), program 
   shell "rm", program 
-echo "\n\n\n ALL DONE!"
+  echo "\n\n\n ALL DONE!"
