@@ -1,3 +1,5 @@
+[![Nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://github.com/h3rald/nifty)
+
 [![Release](https://img.shields.io/github/release/h3rald/nifty.svg)](https://github.com/h3rald/nifty)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/h3rald/nifty/master/LICENSE)
 

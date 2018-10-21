@@ -8,18 +8,18 @@ import
   sequtils
 
 import
-  lib/niftylogger
+  niftypkg/niftylogger
 
 newNiftyLogger().addHandler()
 setLogFilter(lvlInfo)
 
 import
-  lib/config,
-  lib/project,
-  lib/messaging
+  niftypkg/config,
+  niftypkg/project,
+  niftypkg/messaging
 
 let usage* = """  $1 v$2 - $3
-  (c) 2017-2018 Fabio Cevasco
+  (c) 2017-2018 $4
 
   Usage:
     nifty <command> [<package>]           Executes <command> (on <package>).
@@ -31,7 +31,7 @@ let usage* = """  $1 v$2 - $3
                             Default: info
     --help, -h              Displays this message.
     --version, -h           Displays the version of the application.
-""" % [appname, version, appdesc]
+""" % [pkgTitle, pkgVersion, pkgDescription, pkgAuthor]
 
 
 # Helper Methods
@@ -153,7 +153,7 @@ for kind, key, val in getopt():
           echo usage
           quit(0)
         of "version", "v":
-          echo version
+          echo pkgVersion
           quit(0)
         else:
           discard
