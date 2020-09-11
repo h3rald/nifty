@@ -4,11 +4,11 @@
 
 ## Overview
 
-{{n -> *nifty*}} is a simple, self-contained program that can be used as a bare-bones, decentralized (pseudo) package manager and script runner. 
+{{n -> *nifty*}} is a simple, self-contained program that can be used as a bare-bones, decentralized (pseudo) package manager and script runner.
 
 It was born out of the necessity of building {{nim -> [Nim](https://nim-lang.org)}} programs with several dependencies like [min](https://h3rald.com/min) or [hastysite](https://h3rald.com/hastysite) on machines with low memory (i.e. a VPS running x86 Linux with 500MB of RAM). The main problem was that on such low-end machine it [may not even be possible](https://github.com/nim-lang/nimble/issues/278) to compile the [Nimble](https://github.com/nim-lang/nimble) package manager, because apparently it requires more RAM to compile than Nim itself.
 
-Nimble offers a lot of features that *proper* package managers do, like dependency management, package creation and publishing, support for semantic versioning, etc. while {{n}} does not. Hence {{n}} is only a _pseudo-_package manager and script runner, but it could be useful in certain situations nonetheless. 
+Nimble offers a lot of features that _proper_ package managers do, like dependency management, package creation and publishing, support for semantic versioning, etc. while {{n}} does not. Hence {{n}} is only a \_pseudo-\_package manager and script runner, but it could be useful in certain situations nonetheless.
 
 ### Main features
 
@@ -18,23 +18,23 @@ In a nutshell, {{n}} is a program that executes user-defined scripts on a set of
 
 {{n}} doesn't claim to replace your existing package manager, therefore it tries not to get too much in the way of your existing project structure. All it needs to work resides in a humble {{nj -> `nifty.json`}} file that is used to:
 
-* keep track of what packages are part of the current project
-* provide the full definition of all the available commands and how to execute them on specific packages
+-   keep track of what packages are part of the current project
+-   provide the full definition of all the available commands and how to execute them on specific packages
 
-The folder where packages will be stored is by default set to a [packages](class:kwd) subfolder within the current project directory, but even this can be configured in the {{nj}} file. 
+The folder where packages will be stored is by default set to a [packages](class:kwd) subfolder within the current project directory, but even this can be configured in the {{nj}} file.
 
 #### Define your own packages
 
 For {{n}}, a package can be a folder containing files, or even a single files. Through the {{nj}} file, you can define:
 
-* The *source* of a package (typically a git repository or event just a URL).
-* Whether the package supports *git*, *curl* or any other command that will be used to retrieve its contents.
-
+-   The _source_ of a package (typically a git repository or event just a URL).
+-   Whether the package supports _git_, _curl_ or any other command that will be used to retrieve its contents.
 
 {{example-package ->
+
 > %sidebar%
 > Example package
-> 
+>
 > ```
 > "niftylogger.nim": {
 >   "name": "niftylogger.nim",
@@ -42,22 +42,23 @@ For {{n}}, a package can be a folder containing files, or even a single files. T
 >   "curl": true
 > }
 > ```
-}}
+>
+> }}
 
 > %warning%
 > Important
-> 
-> {{n}} does not support nor understand versioning of any kind. It will not attempt to figure out what version of software you need unless you tell it. This is by design, to keep things simple. 
+>
+> {{n}} does not support nor understand versioning of any kind. It will not attempt to figure out what version of software you need unless you tell it. This is by design, to keep things simple.
 
-
-#### Define your own commands 
+#### Define your own commands
 
 You can use your {{nj}} to teach {{n}} new tricks, i.e. how to execute new commands on packages. Your commands look like... well, CLI commands, except that you can use placeholders like `{\{name}\}` and `{\{src}\}` in them for your package name, source, etc.
 
 {{example-command ->
+
 > %sidebar%
 > Example command
-> 
+>
 > ```
 > "install": {
 >   "_syntax": "install [<package>]",
@@ -73,7 +74,8 @@ You can use your {{nj}} to teach {{n}} new tricks, i.e. how to execute new comma
 >   }
 > }
 > ```
-}}
+>
+> }}
 
 #### Run on many different platforms and regardless of the type of project
 
@@ -83,15 +85,14 @@ You can use your {{nj}} to teach {{n}} new tricks, i.e. how to execute new comma
 
 ### Downloading Pre-built Binaries
 
-{# release -> [nifty for $1]({{release}}/dowload/{{$version}}/nifty_v{{$version}}_$2.zip)#}
+{# release -> [nifty for \$1]({{release}}/dowload/{{$version}}/nifty_v{{$version}}_$2.zip)#}
 
 The easiest way to get {{n}} is by downloading one of the prebuilt binaries from the [Github Releases Page]({{release -> https://github.com/h3rald/nifty/releases}}):
 
-  * {#release||Mac OS X (x64)||macosx_x64#}
-  * {#release||Windows (x64)||windows_x64#}
-  * {#release||Linux (x64)||linux_x64#}
-  * {#release||Linux (x86)||linux_x86#}
-  * {#release||Linux (ARM)||linux_arm#}
+-   {#release||Mac OS X (x64)||macosx_x64#}
+-   {#release||Windows (x64)||windows_x64#}
+-   {#release||Linux (x64)||linux_x64#}
+-   {#release||Linux (ARM)||linux_arm#}
 
 ### Building from Source
 
@@ -101,14 +102,14 @@ To do so, after installing the {{nim}} programming language, you can:
 
 3. Clone the nifty [repository](https://github.com/h3rald/nifty).
 4. Navigate to the [nifty](class:dir) repository local folder.
-7. Run **nim c -d:release nifty.nim**
+5. Run **nim c -d:release nifty.nim**
 
 ## Using nifty
 
 To initialize a new project, run the following command within a folder (it doesn't have to be empty):
 
 > %terminal%
-> 
+>
 > nifty init
 > &nbsp;&nbsp;&nbsp;&nbsp;Project initialized using 'packages' as storage directory.
 
@@ -159,48 +160,46 @@ You can create a **niftylogger.nim** package by running `nifty map niftylogger.n
 
 > %terminal%
 > nifty map niftylogger
->     Mapping new package: niftylogger
+> Mapping new package: niftylogger
 > (!) Specify properties for package &apos;niftylogger&apos;:
->    -> Name: src
->    -> Value: &quot;https://github.com/h3rald/nifty/blob/master/lib/niftylogger.nim&quot;
+> -> Name: src
+> -> Value: &quot;https://github.com/h3rald/nifty/blob/master/lib/niftylogger.nim&quot;
 > (!) OK? [y/n]: y
 > (!) Do you want to add/remove more properties? [y/n]: y
->    -> Name: curl
->    -> Value: true
+> -> Name: curl
+> -> Value: true
 > (!) OK? [y/n]: y
 > (!) Do you want to add/remove more properties? [y/n]: n
->     Adding package mapping &apos;niftylogger&apos;&period;&period;&period;
->       src: &quot;https://github.com/h3rald/nifty/blob/master/lib/niftylogger.nim&quot;
->       curl: true
->     Package mapping &apos;niftylogger&apos; saved.
+> Adding package mapping &apos;niftylogger&apos;&period;&period;&period;
+> src: &quot;https://github.com/h3rald/nifty/blob/master/lib/niftylogger.nim&quot;
+> curl: true
+> Package mapping &apos;niftylogger&apos; saved.
 
 The resulting package definition within the {{nj}} file is the following:
 
-
- #example_package#
+#example_package#
 
 {{example-package}}
 
 You can now:
 
-* Install the package using the [install](#install) command.
-* Remove the package mapping using the [unmap](#unmap)
+-   Install the package using the [install](#install) command.
+-   Remove the package mapping using the [unmap](#unmap)
 
 ### Managing commands
 
 By default, when you [initialize a project](#Using-nifty) the generated {{nj}} file contains two default custom command configurations:
 
-* [install](#install)
-* [upgrade](#upgrade)
+-   [install](#install)
+-   [upgrade](#upgrade)
 
 These commands can be used to respectively install and upgrade packages using git or curl. Consider for example the definition of the **install** command:
 
-
- #example_command#
+#example_command#
 
 {{example-command}}
 
-Apart for the **_syntax** and the **_description** properties that are used internally by the [help](#help) command, the other properties specify different command-line commands to execute on projects, depending on the properties that have been defined for them.
+Apart for the **\_syntax** and the **\_description** properties that are used internally by the [help](#help) command, the other properties specify different command-line commands to execute on projects, depending on the properties that have been defined for them.
 
 ### Executing commands
 
@@ -220,36 +219,42 @@ In this case, given the [example install command](#example_command) and the [exa
 2. The command configuration for **install** is retrieved.
 3. The **git+src** command definition is retrieved, because:
     > %unstyled%
-    > * [](class:square) The definition **git+src+tag** cannot be used, because niftylogger does not contain a **git** or a **tag** property. 
-    > * [](class:square) The definition **git+src** cannot be used, because niftylogger does not contain a **git** property. 
-    > * [](class:check) The definition **curl+src+name** is used, because niftylogger has a **name**, a **src**, and a **curl** property.
+    >
+    > - [](class:square) The definition **git+src+tag** cannot be used, because niftylogger does not contain a **git** or a **tag** property.
+    > - [](class:square) The definition **git+src** cannot be used, because niftylogger does not contain a **git** property.
+    > - [](class:check) The definition **curl+src+name** is used, because niftylogger has a **name**, a **src**, and a **curl** property.
 
 > %sidebar%
 > Command execution rules
-> 
-> * If a package is specified when executing a command, the command will be executed only on the specified package.
-> * If the specified package is also a valid {{n}} project (i.e. it contains a valid {{nj}} file), the same command will be executed on all the packages specified in the {{nj}} file, and so on, recursively.
-> * If no packages are specified when executing a command, that command will be executed on *all packages* specified in the {{nj}} file, recursively.
+>
+> -   If a package is specified when executing a command, the command will be executed only on the specified package.
+> -   If the specified package is also a valid {{n}} project (i.e. it contains a valid {{nj}} file), the same command will be executed on all the packages specified in the {{nj}} file, and so on, recursively.
+> -   If no packages are specified when executing a command, that command will be executed on _all packages_ specified in the {{nj}} file, recursively.
 
 In a similar way, you can modify the [commands](#commands) section of the {{nj}} file and create your own command configurations. Each command configuration can have one or more command definitions identified by the property placeholders used.
 
 > %tip%
 > Tip
-> 
+>
 > {{n}} will always try to match the most specific command definition within any given configuration, i.e. the one with the most matching placeholders.
 
+### Executing task lists
+
+[Task Lists](#tasklists) are simple lists of commands to be executed on specific packages. To execute a tasklist, simply specify the name of the tasklist prepended with a `$`, like this:
+
+`nifty $start-all`
+
+In this case, the commands defined in the **start-all** task list will be executed.
 
 ## The {{nj}} file format
 
-
 The {{nj}} file contains information on the current _project_ (for {{n}}, a project is simply a folder with a {{nj}} in it), organized into three main sections:
 
-* storage
-* commands
-* packages
+-   storage
+-   commands
+-   packages
 
 The following is an example of {{nj}} file taken from the [min](https://github.com/h3rald/min) repository:
-
 
 ```
 {
@@ -331,16 +336,15 @@ Custom command configurations are placed within the `commands` object. Each comm
 And one or more command definitions, each identified by the placeholders used in it. Command definition contain the following properties:
 
 cmd
-: A command to execute on a specified, containing placeholders for package properties. By default, the **name** property is always available for all packages, and corresponds to the package identifier. 
+: A command to execute on a specified, containing placeholders for package properties. By default, the **name** property is always available for all packages, and corresponds to the package identifier.
 pwd _(optional)_
 : The directory where the command will be executed (relative to the [storage](#storage) directory specified in the {{nj}} file).
 
-
 > %note%
 > Notes
-> 
-> * Command definition identifiers must be composed by plus-separated property names, e.g. **git+src**, or **wget+src+name**. 
-> * You can use any of the property names specified in the command definition identifier as placeholders within its definition.
+>
+> -   Command definition identifiers must be composed by plus-separated property names, e.g. **git+src**, or **wget+src+name**.
+> -   You can use any of the property names specified in the command definition identifier as placeholders within its definition.
 
 #### Command configuration example
 
@@ -362,8 +366,8 @@ Consider the following command configuration for the default [upgrade](#upgrade)
 
 In this case, there are two command definitions:
 
-* git+name
-* curl+src+name
+-   git+name
+-   curl+src+name
 
 ### packages
 
@@ -371,8 +375,10 @@ Packages definitions are placed in a `packages` object. Each package must be ide
 
 Typically, you should create properties identifying:
 
-* Where to get the package from, i.e. an URL to a file to download, a git repository, or whatever can be fetched. Typically a property called **src** is used for this purpose.
-* How to get the package, i.e. the name of the actual command to run. Typically, you can just define boolean properties named **git**, **curl**, **fossil**, etc.
+-   Where to get the package from, i.e. an URL to a file to download, a git repository, or whatever can be fetched. Typically a property called **src** is used for this purpose.
+-   How to get the package, i.e. the name of the actual command to run. Typically, you can just define boolean properties named **git**, **curl**, **fossil**, etc.
+
+Optionally, you can also specify a **dir** property that will be used by default as the working directory for all the commands executed on the package.
 
 #### Package definition example
 
@@ -386,9 +392,26 @@ Consider the following definition for a package called **nimSHA2**:
 }
 ```
 
-In this case, the package can be fetchet from a git repository.
+In this case, the package can be fetched from a git repository.
 
-{#command -> 
+### tasklists
+
+Tasklist definitions are optional, but they can be used to execute several commands on specific packages in sequence.
+
+#### Task list definition example
+
+Considering the following tasklist definition to execute a custom **start** command on several packages, one after the other:
+
+```
+"start-all": [
+  "start mydbserver",
+  "start myapi",
+  "start myuiserver"
+]
+```
+
+{#command ->
+
 ### $1
 
 #### Syntax
@@ -403,13 +426,13 @@ $3 #}
 
 ## Default system commands
 
-The following sections describe the default system commands. Unlike [custom commands](#Default-custom-commands), system commands *cannot* be customized and do not require external programs to run.
+The following sections describe the default system commands. Unlike [custom commands](#Default-custom-commands), system commands _cannot_ be customized and do not require external programs to run.
 
 {#command||help||help [<command>]||
 Display help on the specified command (or all commands).
- #}
+#}
 
-{#command||info||info <package>|| 
+{#command||info||info <package>||
 Displays information on &lt;package&gt; (essentially all its properties).#}
 
 {#command||init||init [<storage-dir>]||
@@ -419,7 +442,7 @@ Initializes a project in the current directory (using &lt;storage-dir&gt; as sto
 Lists all dependencies (recursively) of the current project.#}
 
 {#command||map||map <package>||
-Configures a new or existing package &lt;package&gt;. 
+Configures a new or existing package &lt;package&gt;.
 
 The configuration of the package properly is interactive: {{n}} will prompt whether you want to add or modify properties.#}
 
@@ -447,15 +470,15 @@ Installs the specified package (or all mapped packages) to the storage directory
 By default, the following definitions are available for this command:
 
 ```
-"git+src": 
+"git+src":
 {
   "cmd": "git clone {\{src}\} --depth 1"
-}, 
-"git+src+tag": 
+},
+"git+src+tag":
 {
   "cmd": "git clone --branch {\{tag}\} {\{src}\} --depth 1"
-}, 
-"curl+src+name": 
+},
+"curl+src+name":
 {
   "cmd": "curl {\{src}\} -o {\{name}\}"
 }
@@ -467,13 +490,15 @@ Upgrades the specified previously-installed package (or all packages).
 By default, the following definitions are available for this command:
 
 ```
-"git+name": 
+
+"git+name":
 {
-  "cmd": "git pull", 
-  "pwd": "{\{name}\}"
-}, 
-"curl+src+name": 
+"cmd": "git pull",
+"pwd": "{\{name}\}"
+},
+"curl+src+name":
 {
-  "cmd": "curl {\{src}\} -o {\{name}\}"
+"cmd": "curl {\{src}\} -o {\{name}\}"
 }
+
 ```#}

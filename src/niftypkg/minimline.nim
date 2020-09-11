@@ -1,10 +1,6 @@
 import
   critbits,
-  terminal,
-  deques,
-  sequtils,
-  strutils,
-  os
+  terminal
 
 system.addQuitProc(resetAttributes)
 

@@ -1,7 +1,6 @@
 import 
   json,
   os,
-  ospaths,
   parseopt,
   logging,
   strutils,
@@ -19,7 +18,7 @@ import
   niftypkg/messaging
 
 let usage* = """  $1 v$2 - $3
-  (c) 2017-2018 $4
+  (c) 2017-2020 $4
 
   Usage:
     nifty <command> [<package>]           Executes <command> (on <package>).
@@ -270,8 +269,19 @@ case args[0]:
       var packages = toSeq(prj.packages.pairs)
       if packages.len == 0:
         warn "No packages defined - nothing to do."
-      else:
-        for key, val in prj.packages.pairs:
-          prj.executeRec(args[0], key) 
+        quit(0)
+      if args[0].startsWith("$"):
+        # Execute task list
+        let tasklist = args[0][1.. args[0].len - 1]
+        if prj.tasklists.isNil or not prj.tasklists.hasKey(tasklist):
+          warn "Task list '$1' not defined in project" % [tasklist]
+          quit(0)
+        let tasks = prj.tasklists[tasklist].getElems
+        for task in tasks:
+          let targs = task.getStr.split(" ").mapIt(it.strip)
+          discard execute(prj, targs[0], targs[1])
+        quit(0)
+      for key, val in prj.packages.pairs:
+        prj.executeRec(args[0], key) 
     else:
       prj.executeRec(args[0], args[1]) 

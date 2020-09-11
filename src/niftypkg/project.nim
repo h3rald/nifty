@@ -12,6 +12,7 @@ type
     storage*: string
     commands*: JsonNode
     packages*: JsonNode
+    tasklists*: JsonNode
 
 const niftyTpl* = "nifty.json".slurp
 const systemHelp = "help.json".slurp
@@ -42,6 +43,10 @@ proc load*(prj: var NiftyProject) =
   prj.storage.createDir()
   prj.commands = cfg["commands"]
   prj.packages = cfg["packages"]
+  if cfg.hasKey("tasklists"):
+    prj.tasklists = cfg["tasklists"]
+  if cfg.hasKey("dir"):
+    prj.dir = cfg["dir"].getStr
 
 proc help*(prj: var NiftyProject): JsonNode =
   result = systemHelp.parseJson
@@ -119,6 +124,8 @@ proc execute*(prj: var NiftyProject, command, alias: string): int =
   var res: JsonNode
   var cmd: string
   var pwd = prj.storage
+  if package.hasKey("dir"):
+    pwd = package["dir"].getStr
   if prj.lookupCommand(command, keys, res):
     cmd = res["cmd"].getStr.replace(placeholder) do (m: int, n: int, c: openArray[string]) -> string:
       return package[c[0]].getStr
@@ -135,10 +142,14 @@ proc execute*(prj: var NiftyProject, command, alias: string): int =
   setCurrentDir(prj.dir)
 
 proc executeRec*(prj: var NiftyProject, command, alias: string) =
-  let pwd = getCurrentDir();
+  prj.load
+  let pwd = getCurrentDir()
+  var dir = alias
   if (execute(prj, command, alias) != 0):
     return
-  var childProj = newNiftyProject(pwd/prj.storage/alias)
+  if prj.packages[alias].hasKey("dir"):
+    dir = prj.packages[alias]["dir"].getStr
+  var childProj = newNiftyProject(pwd/prj.storage/dir)
   if childProj.configured:
     childProj.load()
     setCurrentDir(childProj.dir)

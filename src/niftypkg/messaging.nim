@@ -1,8 +1,7 @@
 import
   terminal,
   strutils,
-  sequtils,
-  unicode
+  sequtils
 
 import
   minimline
