@@ -85,14 +85,13 @@ You can use your {{nj}} to teach {{n}} new tricks, i.e. how to execute new comma
 
 ### Downloading Pre-built Binaries
 
-{# release -> [nifty for \$1]({{release}}/dowload/{{$version}}/nifty_v{{$version}}_$2.zip)#}
+{# release -> [nifty for $1]({{release}}/dowload/{{$version}}/nifty_v{{$version}}_$2.zip)#}
 
 The easiest way to get {{n}} is by downloading one of the prebuilt binaries from the [Github Releases Page]({{release -> https://github.com/h3rald/nifty/releases}}):
 
 -   {#release||Mac OS X (x64)||macosx_x64#}
 -   {#release||Windows (x64)||windows_x64#}
 -   {#release||Linux (x64)||linux_x64#}
--   {#release||Linux (ARM)||linux_arm#}
 
 ### Building from Source
 
