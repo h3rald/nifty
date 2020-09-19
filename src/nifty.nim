@@ -3,6 +3,7 @@ import
   os,
   parseopt,
   logging,
+  algorithm,
   strutils,
   sequtils
 
@@ -245,9 +246,11 @@ case args[0]:
   of "help":
     echo ""
     if args.len < 2:
-      for k, v in prj.help.pairs:
-        printGreen "   nifty $1" % v["_syntax"].getStr
-        echo "\n      $1\n" % v["_description"].getStr
+      var sortedKeys = toSeq(prj.help.keys)
+      sortedKeys.sort(cmp[string])
+      for k in sortedKeys:
+        printGreen "   nifty $1" % prj.help[k]["_syntax"].getStr
+        echo "\n      $1\n" % prj.help[k]["_description"].getStr
     else:
       let cmd = args[1]
       let help = prj.help[cmd]

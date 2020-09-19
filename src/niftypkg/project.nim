@@ -52,6 +52,15 @@ proc help*(prj: var NiftyProject): JsonNode =
   result = systemHelp.parseJson
   if prj.configured:
     prj.load
+    for k, v in prj.tasklists.pairs:
+      let syntax = "$$$1" % k
+      let description = "Executes: $1" % v.elems.mapIt(it.getStr).join(", ")
+      result["$"&k] = ("""
+        {
+          "_syntax": "$1",
+          "_description": "$2"
+        }
+      """ % [syntax, description]).parseJson  
     for k, v in prj.commands.pairs:
       if v.hasKey("_syntax") and v.hasKey("_description"):
         result[k] = ("""
@@ -138,7 +147,7 @@ proc execute*(prj: var NiftyProject, command, alias: string): int =
     pwd.setCurrentDir()
     result = execShellCmd cmd
   else:
-    warn "Command '$1' not available for package '$2'" % [command, alias]
+    debug "Command '$1' not available for package '$2'" % [command, alias]
   setCurrentDir(prj.dir)
 
 proc executeRec*(prj: var NiftyProject, command, alias: string) =

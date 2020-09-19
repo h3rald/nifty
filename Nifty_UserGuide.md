@@ -428,7 +428,7 @@ $3 #}
 The following sections describe the default system commands. Unlike [custom commands](#Default-custom-commands), system commands _cannot_ be customized and do not require external programs to run.
 
 {#command||help||help [<command>]||
-Display help on the specified command (or all commands).
+Display help on the specified command (or all tasklists and commands).
 #}
 
 {#command||info||info <package>||
