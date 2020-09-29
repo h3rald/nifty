@@ -36,7 +36,7 @@ You can use your `nifty.json` to teach *nifty* new tricks, i.e. how to execute n
 
 ### Run on many different platforms and regardless of the type of project
 
-*nifty* is a self-contained executable program written in {{nim -> [Nim](https://nim-lang.org)}} and runs on all platforms where Nim compiles. Also, unlike other package managers that are typically used within the context of one specific programming language (like [NPM](https://www.npmjs.com) for Javascript or [RubyGems](https://rubygems.org) for Ruby), *nifty* can be used in virtually any project, regardless of the programming language used.
+*nifty* is a self-contained executable program written in [Nim](https://nim-lang.org) and runs on all platforms where Nim compiles. Also, unlike other package managers that are typically used within the context of one specific programming language (like [NPM](https://www.npmjs.com) for Javascript or [RubyGems](https://rubygems.org) for Ruby), *nifty* can be used in virtually any project, regardless of the programming language used.
 
 ## Usage
 
