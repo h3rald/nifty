@@ -1,9 +1,10 @@
 import 
   logging,
   strutils,
-  terminal
+  terminal,
+  std/exitprocs
 
-system.addQuitProc(resetAttributes)
+addExitProc(resetAttributes)
 
 type  
   NiftyLogger* = ref object of Logger

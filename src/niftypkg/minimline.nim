@@ -1,8 +1,9 @@
 import
   critbits,
-  terminal
+  terminal,
+  std/exitprocs
 
-system.addQuitProc(resetAttributes)
+addExitProc(resetAttributes)
 
 when defined(windows):
    proc getchr*(): cint {.header: "<conio.h>", importc: "_getch".}
