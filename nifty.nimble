@@ -22,7 +22,7 @@ installExt    = @["nim"]
 
 # Dependencies
 
-requires "nim >= 0.19.0"
+requires "nim >= 1.4.0"
 
 const compile = "nim c -d:release"
 const linux_x64 = "--cpu:amd64 --os:linux -o:nifty"
