@@ -1,8 +1,7 @@
-[![Nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://github.com/h3rald/nifty)
+[![Nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://nimble.directory/pkg/nifty)
 
-![nim](https://img.shields.io/badge/nim-powered-yellow.svg?link=https://nim-lang-org)
-[![Release](https://img.shields.io/github/release/h3rald/nifty.svg)](https://github.com/h3rald/nifty)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/h3rald/nifty/master/LICENSE)
+[![Release](https://img.shields.io/github/release/h3rald/nifty.svg)](https://github.com/h3rald/nifty/releases/latest)
+[![License](https://img.shields.io/github/license/h3rald/nifty.svg)](https://raw.githubusercontent.com/h3rald/nifty/master/LICENSE)
 
 # Nifty
 
