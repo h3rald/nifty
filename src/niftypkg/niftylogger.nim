@@ -4,7 +4,8 @@ import
   terminal,
   std/exitprocs
 
-addExitProc(resetAttributes)
+if isatty(stdin):
+  addExitProc(resetAttributes)
 
 type  
   NiftyLogger* = ref object of Logger
