@@ -11,6 +11,9 @@ type
     label: string
     nodes: seq[TreeNode]
 
+method `==`(obj1, obj2: TreeNode): bool {.base, noSideEffect.} =
+  return obj1.label == obj2.label and obj1.nodes == obj2.nodes
+
 proc foreground(str: string, color: ForegroundColor) =
   stdout.setForegroundColor(color)
   stdout.write(str)
@@ -82,7 +85,7 @@ proc add*(x: var TreeNode, node: TreeNode) =
 proc tree*(node: TreeNode, prefix = ""): string =
   let splitterPart = if node.nodes.len > 0: ch("│") else: ""
   let splitter = "\n" & prefix & splitterPart & ""
-  return prefix & [node.label].join(splitter) & "\n" & node.nodes.map(proc(x: TreeNode): string =
+  let op = proc(x: TreeNode): string =
     let ix = node.nodes.find(x)
     let last = node.nodes.len-1 == ix
     let more = x.nodes.len > 0
@@ -97,7 +100,7 @@ proc tree*(node: TreeNode, prefix = ""): string =
       offset = 2
       endSpace = " "
     return prefix & lastPart & ch("─") & morePart & endSpace & rec[prefix.len+offset .. rec.len-1]
-  ).join("")
+  return prefix & [node.label].join(splitter) & "\n" & node.nodes.map(op).join("")
 
 
 
