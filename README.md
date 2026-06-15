@@ -1,3 +1,5 @@
+**Important** This project was moved to [sourcehut](https://git.sr.ht/~h3rald/nifty) on 2026-06-15.
+
 [![Nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://nimble.directory/pkg/nifty)
 
 [![Release](https://img.shields.io/github/release/h3rald/nifty.svg)](https://github.com/h3rald/nifty/releases/latest)
